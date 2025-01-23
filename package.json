@@ -2,7 +2,7 @@
   "name": "golang-table-driven-tests",
   "displayName": "golang-table-driven-tests",
   "description": "Golang Table Driven Tests Runner",
-  "version": "1.0.0-beta",
+  "version": "1.0.0-beta.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/sebastianpanetta/golang-table-driven-tests"

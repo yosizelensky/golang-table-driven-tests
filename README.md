@@ -1,71 +1,110 @@
-# golang-table-driven-tests README
+# Go Table Driven Tests CodeLens Provider
 
-This is the README for your extension "golang-table-driven-tests". After writing up a brief description, we recommend including the following sections.
+A Visual Studio Code extension that enhances the workflow of working with Go test files by injecting **CodeLens** above test case declarations. These CodeLens actions allow you to easily run or debug individual test cases with a single click.
 
-## Features
+## 📖 Overview
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+The `Go Test CodeLens Provider` extension simplifies the process of running and debugging Go test cases directly from the editor. It works seamlessly with both structured and inline test case declarations in Go, identifying test cases by their `name` field or inline definitions.
 
-For example if there is an image subfolder under your extension project workspace:
+Given the following single-line test structure:
 
-\!\[feature X\]\(images/feature-x.png\)
+```go
+func TestSingleLineTable(t *testing.T) {
+	tests := []struct {
+		name  string
+		input int
+		want  int
+	}{
+		{"test case 1", 1, 2},
+		{"test case 2", 2, 4},
+		{"test case 3", 3, 6},
+	}
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+        // test logic here
+		})
+	}
+}
+```
 
-## Requirements
+Or this multi-line test structure:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+```go
+func TestMultilineTable(t *testing.T) {
+	tests := []struct {
+		name  string
+		input int
+		want  int
+	}{
+		{
+			name:  "test case 1",
+			input: 4,
+			want:  8,
+		},
+		{
+			name:  "test case 2",
+			input: 5,
+			want:  10,
+		},
+		{
+			name:  "test case 3",
+			input: 6,
+			want:  12,
+		},
+	}
 
-## Extension Settings
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fmt.Println("TestMultilineTable: ", tt.name)
+			got := tt.input * 2
+			if got != tt.want {
+				t.Errorf("got = %v, want = %v", got, tt.want)
+			}
+		})
+	}
+}
+```
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+The extension will display Run Test and Debug Test options above each test case declaration.
 
-For example:
+## 🚀 Features
 
-This extension contributes the following settings:
+### CodeLens for Structured Test Cases: 
+Detects and highlights test cases with a name field inside struct declarations.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+### CodeLens for Inline Test Cases: 
+Recognizes inline test case definitions within test arrays or slices.
 
-## Known Issues
+### One-Click Testing: 
+Run or debug individual test cases directly from the editor.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### Parent Test Function Detection: 
+Associates test cases with their parent test function to ensure proper execution.
 
-## Release Notes
+## 🔧 Problem It Solves
 
-Users appreciate release notes as you update your extension.
+Manually identifying and executing specific test cases in large test suites can be time-consuming. This extension automates this process by injecting actionable CodeLens above test case declarations, allowing developers to:
 
-### 1.0.0
+* Quickly identify test cases.
+* Run or debug individual tests without modifying code.
+* Improve workflow efficiency and reduce context switching.
 
-Initial release of ...
+## 🖥️ Compatibility
+Supported VS Code Versions: >=1.93.0.
+Supported Go Versions: Standard Go testing patterns are assumed.
 
-### 1.0.1
+## 📚 Usage
+Open a _test.go file in your Go project.
+Hover over test case declarations to see the Run Test and Debug Test options.
+Click the desired option to run or debug the specific test case.
 
-Fixed issue #.
+## 💡 Notes
+This extension uses regular expressions to identify test case declarations. Ensure your test cases follow standard Go testing patterns.
+For structured test cases, ensure the name field is present at the beginning of the test declaration and uniquely identifies each test.
 
-### 1.1.0
+## 🛠️ Contributing
+Contributions are welcome! Feel free to fork the repository, submit issues, or create pull requests.
 
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+## 📜 License
+This project is licensed under the MIT License.
