@@ -2,9 +2,13 @@
   "name": "golang-table-driven-tests",
   "displayName": "golang-table-driven-tests",
   "description": "Golang Table Driven Tests Runner",
-  "version": "0.0.1",
+  "version": "0.0.1-beta",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sebastianpanetta/golang-table-driven-tests"
+  },
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.93.0"
   },
   "categories": [
     "Other"
@@ -30,7 +34,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.96.0",
+    "@types/vscode": "^1.93.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
