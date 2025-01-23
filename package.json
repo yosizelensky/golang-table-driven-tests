@@ -3,7 +3,7 @@
   "displayName": "golang-table-driven-tests",
   "description": "Golang Table Driven Tests Runner",
   "publisher": "SebastianPanetta",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "icon.png",
   "repository": {
     "type": "git",
