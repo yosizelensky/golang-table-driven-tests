@@ -1,9 +1,9 @@
 {
   "name": "golang-table-driven-tests",
-  "displayName": "golang-table-driven-tests",
-  "description": "Golang Table Driven Tests Runner",
+  "displayName": "Go Table Driven Tests CodeLens Provider",
+  "description": "Go Table Driven Tests CodeLens Provider for Visual Studio Code",
   "publisher": "SebastianPanetta",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "icon": "icon.png",
   "repository": {
     "type": "git",
