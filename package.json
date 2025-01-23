@@ -4,6 +4,7 @@
   "description": "Golang Table Driven Tests Runner",
   "publisher": "SebastianPanetta",
   "version": "1.0.0",
+  "icon": "icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/sebastianpanetta/golang-table-driven-tests"
