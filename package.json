@@ -2,6 +2,7 @@
   "name": "golang-table-driven-tests",
   "displayName": "golang-table-driven-tests",
   "description": "Golang Table Driven Tests Runner",
+  "publisher": "SebastianPanetta",
   "version": "1.0.0",
   "repository": {
     "type": "git",
