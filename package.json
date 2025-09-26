@@ -2,12 +2,12 @@
   "name": "golang-table-driven-tests",
   "displayName": "Go Table Driven Tests CodeLens Provider",
   "description": "Go Table Driven Tests CodeLens Provider for Visual Studio Code",
-  "publisher": "SebastianPanetta",
-  "version": "1.0.2",
+  "publisher": "yosizelensky",
+  "version": "2.1.0",
   "icon": "icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sebastianpanetta/golang-table-driven-tests"
+    "url": "https://github.com/yosizelensky/golang-table-driven-tests"
   },
   "engines": {
     "vscode": "^1.93.0"
@@ -33,7 +33,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "node test/run_tests.js",
+    "test:vscode": "vscode-test"
   },
   "devDependencies": {
     "@types/vscode": "^1.93.0",

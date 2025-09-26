@@ -2,13 +2,13 @@ import * as vscode from 'vscode';
 import { findParentTestFunction } from '../utils/parent_test_function_finder';
 
 export class GoTestCodeLensProvider implements vscode.CodeLensProvider {
-  
-  private structuredRegex = /(?<=(\{|,)\s*\{)\s*name\s*:\s*"([^"]+)"/g;
-  private inlineRegex = /(?<=(\{|,)\s*)\{"([^"]+)",\s*[^}]+\}/g;
+
+  // Support both lowercase 'name' and uppercase 'Name' fields
+  private structuredRegex = /[Nn]ame\s*:\s*"([^"]+)"/g;
+  // Match inline pattern {"name", ...}
+  private inlineRegex = /\{"([^"]+)",\s*[^}]+\}/g;
 
   public async provideCodeLenses(document: vscode.TextDocument): Promise<vscode.CodeLens[]> {
-
-    console.log('[INFO] Checking Provide code lenses for file:', document.fileName);
 
     if (!document.fileName.endsWith('_test.go')) {
       return [];
@@ -18,10 +18,14 @@ export class GoTestCodeLensProvider implements vscode.CodeLensProvider {
     const codeLenses: vscode.CodeLens[] = [];
     let match;
 
+    // Reset regex lastIndex to ensure it starts from beginning
+    this.structuredRegex.lastIndex = 0;
+    this.inlineRegex.lastIndex = 0;
+
     // Process structured test cases
     while ((match = this.structuredRegex.exec(text)) !== null) {
-      console.log(`[INFO] Found a structured test case match: ${match}`);
-      const parentTestFunction = await findParentTestFunction(document.fileName, match[0]);
+      const testName = match[1];
+      const parentTestFunction = await findParentTestFunction(document.fileName, testName);
       if (!parentTestFunction) {
         continue;
       }
@@ -33,20 +37,20 @@ export class GoTestCodeLensProvider implements vscode.CodeLensProvider {
         new vscode.CodeLens(range, {
           title: `run test`,
           command: 'go-test-decorator.runTest',
-          arguments: [match[2]],
+          arguments: [testName],
         }),
         new vscode.CodeLens(range, {
           title: `debug test`,
           command: 'go-test-decorator.debugTest',
-          arguments: [match[2]],
+          arguments: [testName],
         })
       );
     }
 
     // Process inline test cases
     while ((match = this.inlineRegex.exec(text)) !== null) {
-      console.log(`[INFO] Found an inline test case match: ${match}`);
-      const parentTestFunction = await findParentTestFunction(document.fileName, match[0]);
+      const testName = match[1];
+      const parentTestFunction = await findParentTestFunction(document.fileName, testName);
       if (!parentTestFunction) {
         continue;
       }
@@ -58,12 +62,12 @@ export class GoTestCodeLensProvider implements vscode.CodeLensProvider {
         new vscode.CodeLens(range, {
           title: `run test`,
           command: 'go-test-decorator.runTest',
-          arguments: [match[2]],
+          arguments: [testName],
         }),
         new vscode.CodeLens(range, {
           title: `debug test`,
           command: 'go-test-decorator.debugTest',
-          arguments: [match[2]],
+          arguments: [testName],
         })
       );
     }

@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { findParentTestFunction } from '../utils/parent_test_function_finder';
+import { escapeTestNameForRegex, sanitizeTestNameForPath } from '../utils/test_name_utils';
 
 export async function runDebugCommand(testName: string) {
-  const sanitizedTestName = testName.replace(/\s+/g, '_');
-  console.log(`[INFO] Debug test command triggered for: ${sanitizedTestName}`);
+  const sanitizedTestName = sanitizeTestNameForPath(testName);
+  const escapedTestName = escapeTestNameForRegex(testName);
 
   const testFile = vscode.window.activeTextEditor?.document.uri.fsPath;
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -16,28 +17,45 @@ export async function runDebugCommand(testName: string) {
 
   const parentTestFunction = await findParentTestFunction(testFile, testName);
   if (!parentTestFunction) {
-    vscode.window.showErrorMessage(`Could not find the parent test function for: ${sanitizedTestName}`);
+    vscode.window.showErrorMessage(`Could not find the parent test function for: ${testName}`);
     return;
   }
 
-  const fullTestPath = `${parentTestFunction}/${sanitizedTestName}`;
-  const testFileRelativePath = vscode.workspace.asRelativePath(testFile);
-  const testFileDir = path.dirname(testFileRelativePath);
-  const args: string[] = ['-test.run', fullTestPath];
-  let program = workspaceFolder.uri.fsPath;
+  // Check if this is a suite test method
+  const fs = require('fs');
+  const fileContent = fs.readFileSync(testFile, 'utf8');
+  const suiteMethodRegex = new RegExp(`func\\s+\\([^)]+\\)\\s+${parentTestFunction}\\s*\\(`);
+  const isSuiteMethod = suiteMethodRegex.test(fileContent);
 
-  if (testFileDir !== '.') {
-    args.push(`./${testFileDir}`);
-    program = `${program}/${testFileDir}`;
+  let fullTestPath = `${parentTestFunction}/${escapedTestName}`;
+
+  if (isSuiteMethod) {
+    // For suite methods, find the actual test function that runs the suite
+    const suiteTestRegex = /func\s+(Test\w*Suite)\s*\(/g;
+    let match;
+    while ((match = suiteTestRegex.exec(fileContent)) !== null) {
+      const suiteTestName = match[1];
+      if (fileContent.includes(`${suiteTestName}`) && fileContent.includes(parentTestFunction)) {
+        fullTestPath = `${suiteTestName}/${parentTestFunction}/${escapedTestName}`;
+        break;
+      }
+    }
   }
 
+  // Use the directory containing the test file as the program path
+  const testFileDir = path.dirname(testFile);
+
   const debugConfig: vscode.DebugConfiguration = {
-    name: `Debug Go Test: ${fullTestPath}`,
+    name: `Debug Go Test: ${testName}`,
     type: 'go',
     request: 'launch',
     mode: 'test',
-    program: program,
-    args,
+    program: testFileDir,
+    args: [
+      '-test.run',
+      `^${fullTestPath}$`  // Use regex anchors for exact match
+    ],
+    showLog: true
   };
 
   try {
@@ -45,10 +63,9 @@ export async function runDebugCommand(testName: string) {
     if (!started) {
       throw new Error('Failed to start debugging.');
     }
+    // Focus on the debug console
     await vscode.commands.executeCommand('workbench.debug.action.focusRepl');
-    console.log(`[INFO] Debugger started successfully for test: ${fullTestPath}`);
   } catch (error) {
-    console.error(`[ERROR] Failed to debug test for ${fullTestPath}:`, error);
     vscode.window.showErrorMessage(`Failed to debug test: ${fullTestPath}`);
   }
 }

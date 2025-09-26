@@ -103,6 +103,17 @@ Click the desired option to run or debug the specific test case.
 This extension uses regular expressions to identify test case declarations. Ensure your test cases follow standard Go testing patterns.
 For structured test cases, ensure the name field is present at the beginning of the test declaration and uniquely identifies each test.
 
+## 🔄 Fork Improvements
+
+This fork includes the following enhancements:
+
+* **Support for uppercase `Name` fields** - Works with both `name` and `Name` field conventions
+* **Large file support** - Handles test files with thousands of test cases (up to 15MB)
+* **Test suite support** - Properly detects and runs tests in testify/suite style test methods
+* **Variable test definitions** - Supports test arrays defined as package-level variables outside functions
+* **Improved debugging** - Uses absolute paths and proper regex anchors for reliable debugging
+* **Special character handling** - Correctly escapes test names with special regex characters
+
 ## 🛠️ Contributing
 Contributions are welcome! Feel free to fork the repository, submit issues, or create pull requests.
 
